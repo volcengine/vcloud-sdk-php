@@ -104,6 +104,26 @@ class ImageX extends V4Curl
                 ],
             ]
         ],
+        'GetImageUploadFiles' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'GetImageUploadFiles',
+                    'Version' => '2018-08-01',
+                ],
+            ]
+        ],
+        'GetImageUploadFile' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'GetImageUploadFile',
+                    'Version' => '2018-08-01',
+                ],
+            ]
+        ],
     ];
 
     public function applyUploadImage(array $query)
@@ -270,5 +290,38 @@ class ImageX extends V4Curl
     {
         $response = $this->request('DeleteImageUploadFiles', ['query' => ['ServiceId' => $serviceID], 'json' => ['StoreUris' => $uris]]);
         return (string)$response->getBody();
+    }
+
+    public function getImageUploadFiles(string $serviceID, string $fnamePrefix = null, int $offset = 0, int $limit = 1, int $marker = 0)
+    {
+        $applyParams = [];
+        $applyParams["Action"] = "GetImageUploadFiles";
+        $applyParams["Version"] = "2018-08-01";
+        $applyParams["ServiceId"] = $serviceID;
+
+        if ($fnamePrefix != null) $applyParams["FnamePrefix"] = $fnamePrefix;
+        $applyParams["Offset"] = $offset;
+        $applyParams["Limit"] = $limit;
+        $applyParams["Marker"] = $marker;
+
+        $queryStr = http_build_query($applyParams);
+
+        $response = $this->request('GetImageUploadFiles', ['query' => $queryStr]);
+        return (string) $response->getBody();
+    }
+
+    public function getImageUploadFile(string $serviceID, string $storeUri = null)
+    {
+        $applyParams = [];
+        $applyParams["Action"] = "GetImageUploadFile";
+        $applyParams["Version"] = "2018-08-01";
+        $applyParams["ServiceId"] = $serviceID;
+
+        $applyParams["StoreUri"] = $storeUri;
+
+        $queryStr = http_build_query($applyParams);
+
+        $response = $this->request('GetImageUploadFile', ['query' => $queryStr]);
+        return (string) $response->getBody();
     }
 }
